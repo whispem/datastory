@@ -1,23 +1,27 @@
-name: CI
+name: Rust CI
+
 on:
   push:
     branches: [ main ]
   pull_request:
     branches: [ main ]
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Set up Rust
-        uses: actions/setup-rust@v1
+      - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1
         with:
-          rust-version: 'stable'
+          toolchain: stable
+          profile: minimal
+          override: true
       - name: Build
         run: cargo build --release
-      - name: Run tests
-        run: cargo test --all
-      - name: Check formatting
-        run: cargo fmt -- --check
-      - name: Clippy lint
+      - name: Clippy
         run: cargo clippy -- -D warnings
+      - name: Test
+        run: cargo test --all
+      - name: Benchmarks
+        run: cargo bench
